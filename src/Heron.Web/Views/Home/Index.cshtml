@@ -1,0 +1,83 @@
+@model SearchPage
+@{
+    ViewData["Title"] = "Find a room";
+    var form = Model.Form;
+    var starts = Enumerable.Range(14, 28).Select(i => TimeSpan.FromMinutes(i * 30)).ToList(); // 07:00 to 20:30
+    var lengths = new[] { 30, 60, 90, 120, 180, 240, 360, 480 };
+}
+
+<section class="hero">
+    <h1>Find a meeting room</h1>
+    <p class="muted">Tell us when and how many of you there are. We show the rooms that are free for the whole time.</p>
+
+    <form method="get" asp-controller="Home" asp-action="Index" class="search" role="search">
+        <div class="field">
+            <label for="Date">Day</label>
+            <input type="date" id="Date" name="Date" value="@Fmt.IsoDate(form.Date ?? DateTime.Today)" required>
+        </div>
+        <div class="field">
+            <label for="Start">From</label>
+            <select id="Start" name="Start">
+                @foreach (var s in starts)
+                {
+                    var text = $"{(int)s.TotalHours:00}:{s.Minutes:00}";
+                    <option value="@text" selected="@(text == form.Start)">@text</option>
+                }
+            </select>
+        </div>
+        <div class="field">
+            <label for="Minutes">For</label>
+            <select id="Minutes" name="Minutes">
+                @foreach (var m in lengths)
+                {
+                    <option value="@m" selected="@(m == form.Minutes)">@(m < 60 ? $"{m} min" : m % 60 == 0 ? $"{m / 60} h" : $"{m / 60.0:0.#} h")</option>
+                }
+            </select>
+        </div>
+        <div class="field">
+            <label for="People">People</label>
+            <input type="number" id="People" name="People" min="1" max="100" value="@form.People" required>
+        </div>
+        <button class="btn" type="submit">Search</button>
+    </form>
+</section>
+
+@if (Model.Searched)
+{
+    @if (Model.Problem != null)
+    {
+        <p class="notice notice-bad" role="alert">@Model.Problem</p>
+    }
+    else
+    {
+        <h2>@(Model.Rooms.Count == 0 ? "No room is free then" : Model.Rooms.Count == 1 ? "1 room is free" : Model.Rooms.Count + " rooms are free")
+            <span class="muted">@Fmt.Date(Model.StartAt!.Value), @Fmt.Time(Model.StartAt.Value) to @Fmt.Time(Model.EndAt!.Value), @form.People @(form.People == 1 ? "person" : "people")</span></h2>
+
+        @if (Model.Rooms.Count == 0)
+        {
+            <div class="empty">
+                <p>Try another time or a shorter booking. Rooms that are too small or closed at that hour are not shown.</p>
+            </div>
+        }
+        else
+        {
+            <ul class="room-list">
+                @foreach (var r in Model.Rooms)
+                {
+                    <li class="room">
+                        <div>
+                            <h3>@r.Name</h3>
+                            <p class="muted">@r.Description</p>
+                            <p class="meta"><span>Up to @r.Capacity people</span><span>@Fmt.Money(r.PricePerHour) per hour</span></p>
+                        </div>
+                        <div class="room-side">
+                            <p class="price">@Fmt.Money(r.TotalPrice)</p>
+                            <a class="btn" asp-controller="Bookings" asp-action="Create"
+                               asp-route-roomId="@r.Id" asp-route-start="@Fmt.Iso(Model.StartAt!.Value)" asp-route-end="@Fmt.Iso(Model.EndAt!.Value)" asp-route-people="@form.People">Book</a>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    }
+}

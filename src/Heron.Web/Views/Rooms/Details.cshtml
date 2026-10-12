@@ -1,0 +1,32 @@
+@model Room
+@{
+    ViewData["Title"] = Model.Name;
+    var date = (DateTime)ViewBag.Date;
+}
+
+<p><a asp-action="Index">All rooms</a></p>
+<h1>@Model.Name</h1>
+<p>@Model.Description</p>
+<p class="meta">
+    <span>Up to @Model.Capacity people</span>
+    <span>@Fmt.Money(Model.PricePerHour) per hour</span>
+    <span>Open @Model.OpenFrom.ToString("HH:mm") to @Model.OpenTo.ToString("HH:mm")</span>
+</p>
+
+<form method="get" class="inline-form">
+    <label for="date">Day</label>
+    <input type="date" id="date" name="date" value="@Fmt.IsoDate(date)">
+    <button class="btn btn-small" type="submit">Show</button>
+</form>
+
+<p class="muted">Click a free slot to start, then click the last slot you need. Grey slots are taken.</p>
+
+<div id="timeline" class="timeline" data-url="@Url.Action("Day", "Rooms", new { id = Model.Id })"
+     data-room="@Model.Id" data-date="@Fmt.IsoDate(date)" data-booking-url="@Url.Action("Create", "Bookings")"
+     data-capacity="@Model.Capacity" data-price="@Model.PricePerHour.ToString(System.Globalization.CultureInfo.InvariantCulture)">
+    <noscript>The timeline needs JavaScript. You can also use <a asp-controller="Home" asp-action="Index">the search</a>.</noscript>
+</div>
+
+@section Scripts {
+    <script type="module" src="~/js/timeline.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,27 @@
+@model RoomForm
+@{
+    ViewData["Title"] = Model.Id == 0 ? "New room" : "Edit room";
+}
+
+<p><a asp-action="Rooms">Back to rooms</a></p>
+<h1>@ViewData["Title"]</h1>
+
+<form method="post" asp-action="SaveRoom" class="form">
+    <div asp-validation-summary="All" class="form-error" role="alert"></div>
+    <input type="hidden" asp-for="Id">
+    <div class="field"><label asp-for="Name"></label><input asp-for="Name"></div>
+    <div class="field"><label asp-for="Description"></label><textarea asp-for="Description" rows="3"></textarea></div>
+    <div class="grid-3">
+        <div class="field"><label asp-for="Capacity"></label><input asp-for="Capacity" type="number" min="1"></div>
+        <div class="field"><label asp-for="PricePerHour"></label><input asp-for="PricePerHour" type="number" step="0.5" min="0"></div>
+        <div></div>
+        <div class="field"><label asp-for="OpenFrom"></label><input asp-for="OpenFrom" type="time" step="1800"></div>
+        <div class="field"><label asp-for="OpenTo"></label><input asp-for="OpenTo" type="time" step="1800"></div>
+    </div>
+    <label class="check"><input asp-for="IsActive"> @Html.DisplayNameFor(m => m.IsActive)</label>
+    <p class="hint">Changing the price or the hours doesn't change bookings that already exist.</p>
+    <div class="actions">
+        <button class="btn" type="submit">Save</button>
+        <a class="btn btn-ghost" asp-action="Rooms">Cancel</a>
+    </div>
+</form>

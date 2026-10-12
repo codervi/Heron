@@ -1,0 +1,29 @@
+@model List<Room>
+@{
+    ViewData["Title"] = "Rooms";
+}
+
+<div class="page-head">
+    <h1>Rooms</h1>
+    <a class="btn" asp-action="NewRoom">Add room</a>
+</div>
+<p class="subnav"><a asp-action="Index">Reports</a> <a asp-action="Bookings">Bookings</a></p>
+
+<div class="table-wrap">
+    <table>
+        <thead><tr><th scope="col">Name</th><th scope="col" class="num">Capacity</th><th scope="col" class="num">Per hour</th><th scope="col">Open</th><th scope="col">Bookable</th><th scope="col"></th></tr></thead>
+        <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.Name</td>
+                <td class="num">@r.Capacity</td>
+                <td class="num">@Fmt.Money(r.PricePerHour)</td>
+                <td>@r.OpenFrom.ToString("HH:mm") to @r.OpenTo.ToString("HH:mm")</td>
+                <td>@(r.IsActive ? "Yes" : "Switched off")</td>
+                <td><a asp-action="EditRoom" asp-route-id="@r.Id">Edit</a></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,63 @@
+@model List<BookingDetail>
+@{
+    ViewData["Title"] = "My bookings";
+    var now = DateTime.Now;
+    var upcoming = Model.Where(b => b.Status == "Confirmed" && b.EndAt > now).OrderBy(b => b.StartAt).ToList();
+    var past = Model.Where(b => !(b.Status == "Confirmed" && b.EndAt > now)).ToList();
+}
+
+<h1>My bookings</h1>
+
+<h2>Coming up</h2>
+@if (upcoming.Count == 0)
+{
+    <div class="empty"><p>Nothing booked. <a asp-controller="Home" asp-action="Index">Find a room.</a></p></div>
+}
+else
+{
+    <ul class="room-list">
+        @foreach (var b in upcoming)
+        {
+            <li class="room">
+                <div>
+                    <h3>@b.RoomName <span class="muted">@b.Title</span></h3>
+                    <p class="meta"><span>@Fmt.Date(b.StartAt)</span><span>@Fmt.Time(b.StartAt) to @Fmt.Time(b.EndAt)</span><span>@b.Attendees people</span></p>
+                </div>
+                <div class="room-side">
+                    <p class="price">@Fmt.Money(b.TotalPrice)</p>
+                    @if (BookingRules.CanCancel(b.StartAt, now))
+                    {
+                        <form asp-action="Cancel" asp-route-id="@b.Id" method="post" data-confirm="Cancel this booking?">
+                            <button class="btn btn-small btn-danger" type="submit">Cancel</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <p class="hint">Too close to cancel online</p>
+                    }
+                </div>
+            </li>
+        }
+    </ul>
+}
+
+@if (past.Count > 0)
+{
+    <h2>Earlier</h2>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th scope="col">Room</th><th scope="col">When</th><th scope="col">Status</th><th scope="col" class="num">Total</th></tr></thead>
+            <tbody>
+            @foreach (var b in past)
+            {
+                <tr>
+                    <td>@b.RoomName <span class="muted">@b.Title</span></td>
+                    <td>@Fmt.Date(b.StartAt), @Fmt.Time(b.StartAt) to @Fmt.Time(b.EndAt)</td>
+                    <td><span class="badge badge-@b.Status.ToLower()">@b.Status</span></td>
+                    <td class="num">@(b.Status == "Cancelled" ? "-" : Fmt.Money(b.TotalPrice))</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

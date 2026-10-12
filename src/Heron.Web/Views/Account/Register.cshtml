@@ -1,0 +1,13 @@
+@model RegisterForm
+@{
+    ViewData["Title"] = "Create account";
+}
+
+<h1>Create an account</h1>
+<form method="post" class="form narrow">
+    <div asp-validation-summary="ModelOnly" class="form-error" role="alert"></div>
+    <div class="field"><label asp-for="FullName"></label><input asp-for="FullName" autocomplete="name"><span asp-validation-for="FullName" class="form-error"></span></div>
+    <div class="field"><label asp-for="Email"></label><input asp-for="Email" autocomplete="username"><span asp-validation-for="Email" class="form-error"></span></div>
+    <div class="field"><label asp-for="Password"></label><input asp-for="Password" autocomplete="new-password"><p class="hint">At least 8 characters.</p><span asp-validation-for="Password" class="form-error"></span></div>
+    <button class="btn" type="submit">Create account</button>
+</form>

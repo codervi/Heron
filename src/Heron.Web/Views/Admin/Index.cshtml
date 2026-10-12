@@ -1,0 +1,89 @@
+@model AdminDashboard
+@{
+    ViewData["Title"] = "Admin";
+    var total = Model.Revenue.FirstOrDefault(r => r.IsTotal);
+    var rows = Model.Revenue.Where(r => !r.IsTotal).ToList();
+    // fill in the hours the report left out, 07:00 to 21:00
+    var peak = Enumerable.Range(7, 15)
+        .Select(h => Model.Peak.FirstOrDefault(p => p.Hour == h) ?? new PeakHourRow { Hour = h })
+        .ToList();
+    var peakMax = Math.Max(1, peak.Max(p => p.BookedMinutes));
+}
+
+<h1>Admin</h1>
+<p class="subnav">
+    <a asp-action="Bookings">Bookings</a>
+    <a asp-action="Rooms">Rooms</a>
+</p>
+
+<form method="get" class="inline-form">
+    <label for="from">From</label>
+    <input type="date" id="from" name="from" value="@Fmt.IsoDate(Model.From)">
+    <label for="to">To</label>
+    <input type="date" id="to" name="to" value="@Fmt.IsoDate(Model.To)">
+    <button class="btn btn-small" type="submit">Update</button>
+</form>
+
+<div class="stats">
+    <div class="stat"><span>@(total?.Bookings ?? 0)</span><p>bookings in this period</p></div>
+    <div class="stat"><span>@Fmt.Money0(total?.Revenue ?? 0)</span><p>revenue (cancelled bookings not counted)</p></div>
+    <div class="stat"><span>@Fmt.Number(total?.Hours ?? 0)</span><p>hours booked</p></div>
+    <div class="stat"><span>@Model.UpcomingToday</span><p>bookings today</p></div>
+</div>
+
+<div class="two-col">
+    <section>
+        <h2>Revenue by room</h2>
+        @if (rows.Count == 0)
+        {
+            <div class="empty"><p>No bookings in this period.</p></div>
+        }
+        else
+        {
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th scope="col">Room</th><th scope="col" class="num">Bookings</th><th scope="col" class="num">Hours</th><th scope="col" class="num">Revenue</th></tr></thead>
+                    <tbody>
+                    @foreach (var r in rows)
+                    {
+                        <tr><td>@r.RoomName</td><td class="num">@r.Bookings</td><td class="num">@Fmt.Number(r.Hours)</td><td class="num">@Fmt.Money(r.Revenue)</td></tr>
+                    }
+                    </tbody>
+                    @if (total != null)
+                    {
+                        <tfoot><tr><th scope="row">@total.RoomName</th><td class="num">@total.Bookings</td><td class="num">@Fmt.Number(total.Hours)</td><td class="num">@Fmt.Money(total.Revenue)</td></tr></tfoot>
+                    }
+                </table>
+            </div>
+        }
+    </section>
+
+    <section>
+        <h2>Last 30 days: how full were the rooms?</h2>
+        <ul class="bars">
+            @foreach (var u in Model.Utilisation)
+            {
+                <li>
+                    <span class="bar-label">@u.RoomName</span>
+                    <span class="bar-track" role="img" aria-label="@u.RoomName: @Fmt.Number(u.UtilisationPercent) percent booked"><span class="bar-fill" style="width:@Fmt.Number(Math.Min(100, u.UtilisationPercent))%"></span></span>
+                    <span class="bar-value">@Fmt.Number(u.UtilisationPercent)%</span>
+                </li>
+            }
+        </ul>
+        <p class="hint">Booked hours divided by opening hours.</p>
+    </section>
+</div>
+
+<section>
+    <h2>Busiest hours</h2>
+    <div class="columns-chart" role="list">
+        @foreach (var p in peak)
+        {
+            <div class="col" role="listitem" title="@p.Hour:00, @Fmt.Number(p.BookedMinutes / 60m) hours booked in @p.Bookings bookings">
+                <span class="col-bar" style="height:@Fmt.Number(100m * p.BookedMinutes / peakMax)%"></span>
+                <span class="col-label">@p.Hour</span>
+            </div>
+        }
+    </div>
+    <p class="hint">Hours booked in each hour of the day, for the period above.</p>
+</section>

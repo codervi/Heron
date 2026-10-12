@@ -1,0 +1,34 @@
+@model ConfirmBooking
+@{
+    ViewData["Title"] = "Confirm booking";
+}
+
+<h1>Confirm your booking</h1>
+
+<div class="two-col">
+    <form method="post" class="form">
+        <div asp-validation-summary="All" class="form-error" role="alert"></div>
+        <input type="hidden" asp-for="RoomId">
+        <input type="hidden" name="StartAt" value="@Fmt.Iso(Model.StartAt)">
+        <input type="hidden" name="EndAt" value="@Fmt.Iso(Model.EndAt)">
+        <input type="hidden" asp-for="Attendees">
+
+        <div class="field">
+            <label asp-for="Title"></label>
+            <input asp-for="Title" maxlength="100" autofocus>
+        </div>
+        <button class="btn" type="submit">Confirm and book</button>
+        <a class="btn btn-ghost" asp-controller="Home" asp-action="Index">Cancel</a>
+    </form>
+
+    <aside class="summary">
+        <h2>@Model.RoomName</h2>
+        <dl class="sums">
+            <dt>Day</dt><dd>@Fmt.Date(Model.StartAt)</dd>
+            <dt>Time</dt><dd>@Fmt.Time(Model.StartAt) to @Fmt.Time(Model.EndAt)</dd>
+            <dt>People</dt><dd>@Model.Attendees</dd>
+            <dt class="total">Total</dt><dd class="total">@Fmt.Money(Model.Total)</dd>
+        </dl>
+        <p class="hint">You can cancel for free until @BookingRules.CancelUntilHoursBefore hours before it starts. Payment is taken at the desk.</p>
+    </aside>
+</div>

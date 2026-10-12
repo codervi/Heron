@@ -1,0 +1,23 @@
+@model List<Room>
+@{
+    ViewData["Title"] = "All rooms";
+}
+
+<h1>All rooms</h1>
+<ul class="room-list">
+    @foreach (var r in Model)
+    {
+        <li class="room">
+            <div>
+                <h2><a asp-action="Details" asp-route-id="@r.Id">@r.Name</a></h2>
+                <p class="muted">@r.Description</p>
+                <p class="meta">
+                    <span>Up to @r.Capacity people</span>
+                    <span>@Fmt.Money(r.PricePerHour) per hour</span>
+                    <span>Open @r.OpenFrom.ToString("HH:mm") to @r.OpenTo.ToString("HH:mm")</span>
+                </p>
+            </div>
+            <div class="room-side"><a class="btn btn-ghost" asp-action="Details" asp-route-id="@r.Id">See availability</a></div>
+        </li>
+    }
+</ul>

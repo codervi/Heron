@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@(ViewData["Title"] is string t ? t + " | " : "")Heron Rooms</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+    <div class="wrap bar">
+        <a class="brand" asp-controller="Home" asp-action="Index">Heron <span>Rooms</span></a>
+        <nav aria-label="Main">
+            <a asp-controller="Home" asp-action="Index">Find a room</a>
+            <a asp-controller="Rooms" asp-action="Index">All rooms</a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a asp-controller="Bookings" asp-action="My">My bookings</a>
+            }
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="Admin" asp-action="Index">Admin</a>
+            }
+        </nav>
+        <div class="bar-right">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form asp-controller="Account" asp-action="Logout" method="post" class="inline">
+                    <button class="link" type="submit">Sign out</button>
+                </form>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login">Sign in</a>
+            }
+        </div>
+    </div>
+</header>
+
+<main id="main" class="wrap">
+    @if (TempData["Message"] is string ok)
+    {
+        <p class="notice notice-ok" role="status">@ok</p>
+    }
+    @if (TempData["Error"] is string bad)
+    {
+        <p class="notice notice-bad" role="alert">@bad</p>
+    }
+    @RenderBody()
+</main>
+
+<footer class="wrap foot">
+    <p>Heron Rooms is a made-up venue for a portfolio project. All times are the venue's local time.</p>
+</footer>
+
+<script type="module" src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

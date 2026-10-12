@@ -1,0 +1,25 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heron.Web", "src\Heron.Web\Heron.Web.csproj", "{E4A81C37-6B52-4D09-93F8-0C7D2A5B16E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heron.Tests", "tests\Heron.Tests\Heron.Tests.csproj", "{58B3D2A9-17C4-4E60-A0F5-9D84C1E73B26}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E4A81C37-6B52-4D09-93F8-0C7D2A5B16E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4A81C37-6B52-4D09-93F8-0C7D2A5B16E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4A81C37-6B52-4D09-93F8-0C7D2A5B16E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4A81C37-6B52-4D09-93F8-0C7D2A5B16E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58B3D2A9-17C4-4E60-A0F5-9D84C1E73B26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58B3D2A9-17C4-4E60-A0F5-9D84C1E73B26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58B3D2A9-17C4-4E60-A0F5-9D84C1E73B26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58B3D2A9-17C4-4E60-A0F5-9D84C1E73B26}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
